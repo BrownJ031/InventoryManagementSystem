@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IVM.Library")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d249485d979d53a98cc934e0059315d6bcb0b972")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b98dbf9e4319ff298f2a27e437021ea54e156379")]
 [assembly: System.Reflection.AssemblyProductAttribute("IVM.Library")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IVM.Library")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
