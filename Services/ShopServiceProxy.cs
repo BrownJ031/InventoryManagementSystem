@@ -1,96 +1,97 @@
-﻿using InventoryManagementSystem.Models;
+﻿using IVM.Library.Models;
+using System.Collections.ObjectModel;
 
-namespace InventoryManagementSystem.Library.Services
+namespace IVM.Library.Services
 {
     public class ShopServiceProxy
     {
-        private InventoryServiceProxy inventory;
-        private List<(Item, int)> cart;
+        private static ShopServiceProxy? instance;
+        private static readonly object instanceLock = new object();
 
-        public ShopServiceProxy(InventoryServiceProxy inventory)
+        private List<ShoppingCart> carts;
+
+        private ShopServiceProxy()
         {
-            this.inventory = inventory;
-            cart = new List<(Item, int)>();
+            carts = new List<ShoppingCart>();
         }
 
-        public void AddToCart(int itemId, int quantity)
+        public static ShopServiceProxy Current
         {
-            var item = inventory.GetItemById(itemId);
-            if (item != null)
+            get
             {
-                if (item.Quantity >= quantity)
+                lock (instanceLock)
                 {
-                    cart.Add((item, quantity));
-                    item.Quantity -= quantity;
-                    Console.WriteLine($"{quantity} of {item.Name} added to cart.");
+                    instance ??= new ShopServiceProxy();
+                    return instance;
                 }
-                else
+            }
+        }
+
+        public ReadOnlyCollection<ShoppingCart> Carts => carts.AsReadOnly();
+
+        public ShoppingCart Cart
+        {
+            get
+            {
+                if (!carts.Any())
                 {
-                    Console.WriteLine("Not enough quantity available.");
+                    var newCart = new ShoppingCart();
+                    carts.Add(newCart);
+                    return newCart;
                 }
+                return carts.FirstOrDefault() ?? new ShoppingCart();
+            }
+        }
+
+        public void AddToCart(Item newItem)
+        {
+            var cart = Cart;
+            var existingItem = cart.Contents.FirstOrDefault(i => i.Id == newItem.Id);
+            var inventoryItem = InventoryServiceProxy.Current.Items.FirstOrDefault(i => i.Id == newItem.Id);
+
+            if (inventoryItem == null) return;
+
+            inventoryItem.Quantity -= newItem.Quantity;
+
+            if (existingItem != null)
+            {
+                existingItem.Quantity += newItem.Quantity;
             }
             else
             {
-                Console.WriteLine("Item not found.");
+                cart.Contents.Add(newItem);
             }
         }
 
         public void RemoveFromCart(int itemId, int quantity)
         {
-            var cartItem = cart.FirstOrDefault(ci => ci.Item1.Id == itemId);
-            if (cartItem.Item1 != null)
+            var cart = Cart;
+            var itemToRemove = cart.Contents.FirstOrDefault(i => i.Id == itemId);
+            var inventoryItem = InventoryServiceProxy.Current.Items.FirstOrDefault(i => i.Id == itemId);
+
+            if (itemToRemove != null)
             {
-                if (cartItem.Item2 >= quantity)
+                if (itemToRemove.Quantity >= quantity)
                 {
-                    cartItem.Item1.Quantity += quantity;
-                    if (cartItem.Item2 == quantity)
+                    itemToRemove.Quantity -= quantity;
+                    if (itemToRemove.Quantity == 0)
                     {
-                        cart.Remove(cartItem);
+                        cart.Contents.Remove(itemToRemove);
                     }
-                    else
-                    {
-                        cart.Remove(cartItem);
-                        cart.Add((cartItem.Item1, cartItem.Item2 - quantity));
-                    }
-                    Console.WriteLine($"{quantity} of {cartItem.Item1.Name} removed from cart.");
                 }
                 else
                 {
-                    Console.WriteLine("Not enough quantity in cart.");
+                    cart.Contents.Remove(itemToRemove);
+                }
+
+                if (inventoryItem != null)
+                {
+                    inventoryItem.Quantity += quantity;
                 }
             }
-            else
-            {
-                Console.WriteLine("Item not found in cart.");
-            }
         }
 
-        public void Checkout()
-        {
-            if (cart.Count == 0)
-            {
-                Console.WriteLine("Cart is empty.");
-                return;
-            }
-
-            double subtotal = 0;
-            foreach (var cartItem in cart)
-            {
-                subtotal += cartItem.Item1.Price * cartItem.Item2;
-            }
-            double tax = subtotal * 0.07;
-            double total = subtotal + tax;
-
-            Console.WriteLine("Receipt:");
-            foreach (var cartItem in cart)
-            {
-                Console.WriteLine($"{cartItem.Item1.Name} (x{cartItem.Item2}): ${cartItem.Item1.Price * cartItem.Item2:F2}");
-            }
-            Console.WriteLine($"Subtotal: ${subtotal:F2}");
-            Console.WriteLine($"Tax: ${tax:F2}");
-            Console.WriteLine($"Total: ${total:F2}");
-
-            cart.Clear();
-        }
+        public double TotalPrice => Cart.Contents.Sum(i => i.Price * i.Quantity);
     }
 }
+

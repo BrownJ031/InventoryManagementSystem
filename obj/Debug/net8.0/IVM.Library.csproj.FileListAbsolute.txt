@@ -5,6 +5,7 @@ C:\Users\ppong\OneDrive\Desktop\IVM.Library\obj\Debug\net8.0\IVM.Library.Generat
 C:\Users\ppong\OneDrive\Desktop\IVM.Library\obj\Debug\net8.0\IVM.Library.AssemblyInfoInputs.cache
 C:\Users\ppong\OneDrive\Desktop\IVM.Library\obj\Debug\net8.0\IVM.Library.AssemblyInfo.cs
 C:\Users\ppong\OneDrive\Desktop\IVM.Library\obj\Debug\net8.0\IVM.Library.csproj.CoreCompileInputs.cache
+C:\Users\ppong\OneDrive\Desktop\IVM.Library\obj\Debug\net8.0\IVM.Library.sourcelink.json
 C:\Users\ppong\OneDrive\Desktop\IVM.Library\obj\Debug\net8.0\IVM.Library.dll
 C:\Users\ppong\OneDrive\Desktop\IVM.Library\obj\Debug\net8.0\refint\IVM.Library.dll
 C:\Users\ppong\OneDrive\Desktop\IVM.Library\obj\Debug\net8.0\IVM.Library.pdb
